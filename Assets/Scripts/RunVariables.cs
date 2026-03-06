@@ -69,7 +69,7 @@ public class Run {
         freshMult = 1.25f;
         staleMult = 0.75f;
 
-        freshChance = 0.1f;
+        freshChance = 0.1f; // 10% chance for stale and fresh
         staleChance = 0.1f;
 
         // level goals

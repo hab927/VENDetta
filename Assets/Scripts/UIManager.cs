@@ -143,6 +143,20 @@ public class UIManager : MonoBehaviour
         shop.GetComponent<Animator>().SetTrigger("Continue");
     }
 
+    public void AnimateFlavorText(Transform origin) { // animate a flavor text at the given transform
+        GameObject dropText = (GameObject)Resources.Load("Drop Text");
+        GameObject empty = new GameObject();
+        GameObject flavor = Instantiate(dropText);
+        empty.transform.position = origin.transform.position;
+        dropText.transform.parent = empty.transform;
+        StartCoroutine(FlavorCR(flavor));
+    }
+    public IEnumerator FlavorCR(GameObject f) {
+        f.GetComponent<Animator>().Play("Fly Up and Fade");
+        yield return new WaitForSeconds(0.5f);
+        Destroy(f);
+    }
+
     public void EndLevelAnimation() {
         StartCoroutine(EndLevelCR());
     }

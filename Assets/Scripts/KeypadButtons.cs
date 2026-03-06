@@ -69,6 +69,8 @@ public class KeypadButtons : MonoBehaviour
             yield return null;
         }
 
+        UIManager.instance.AnimateFlavorText(selection.transform);
+
         if (impact != null) {
             impact.GetComponent<Animator>().Play("Fade Out");
         }
