@@ -35,29 +35,22 @@ public class ItemPlacer : MonoBehaviour
         Run run = GameManager.Instance.run;
         foreach (var row in rows) {
             for (int i = 1; i < 5; i++) {
-                GameObject slot = GameObject.Find(row + i.ToString());
-                GameObject item;
-                if (row == 'A' || row == 'B') { // snacks in the first two rows
-                    GameObject snack = (GameObject)Resources.Load(run.snacks[Random.Range(0, run.snacks.Count)]);
-                    int amount = Random.Range(1, 4); // instantiate anywhere from 1-3 items
-                    for (int j = 0; j<amount; j++) {
-                        item = Instantiate(snack);
-                        item.name = item.name.Replace("(Clone)", ""); // to make handling easier
-                        item.GetComponent<SpriteRenderer>().sortingOrder = 1000 - j;
-                        item.transform.position = slot.transform.position;
-                        item.transform.parent = slot.transform;
-                    }
+            GameObject slot = GameObject.Find(row + i.ToString());
+            GameObject item;
+                GameObject product;
+                if (row == 'A' || row == 'B') {
+                    product = (GameObject)Resources.Load(run.snacks[Random.Range(0, run.snacks.Count)]);
                 }
-                else {                          // drinks in the first two rows
-                    GameObject drink = (GameObject)Resources.Load(run.drinks[Random.Range(0, run.drinks.Count)]);
-                    int amount = Random.Range(1, 4); // instantiate anywhere from 1-3 items
-                    for (int j = 0; j < amount; j++) {
-                        item = Instantiate(drink);
-                        item.name = item.name.Replace("(Clone)", ""); // to make handling easier
-                        item.GetComponent<SpriteRenderer>().sortingOrder = 1000 - j;
-                        item.transform.position = slot.transform.position;
-                        item.transform.parent = slot.transform;
-                    }
+                else {
+                    product = (GameObject)Resources.Load(run.drinks[Random.Range(0, run.drinks.Count)]);
+                }
+                int amount = Random.Range(run.stockMin, run.stockMax); // instantiate anywhere from 1-3 items
+                for (int j = 0; j<amount; j++) {
+                    item = Instantiate(product);
+                    item.name = item.name.Replace("(Clone)", ""); // to make handling easier
+                    item.GetComponent<SpriteRenderer>().sortingOrder = 1000 - j;
+                    item.transform.position = slot.transform.position;
+                    item.transform.parent = slot.transform;
                 }
             }
         }

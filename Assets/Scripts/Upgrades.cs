@@ -45,6 +45,10 @@ namespace Upgrades
             CurrentRun.income += 10.0f;
             CurrentRun.bonuses = true;
         }
+        public static void IncreaseStock() {
+            CurrentRun.stockMin = 2;
+            CurrentRun.stockMax = 2;
+        }
     }
 
     public static class UpgradePool {
@@ -53,7 +57,7 @@ namespace Upgrades
                 new Upgrade(
                     "Chip Booster",
                     "Grants 1.5x satiation for chips.",
-                    8.00f,
+                    6.00f,
                     UpgradeEffects.BoostChips
                 )
             },
@@ -61,7 +65,7 @@ namespace Upgrades
                 new Upgrade(
                     "Water Booster",
                     "Grants 1.5x hydration for water.",
-                    8.00f,
+                    6.00f,
                     UpgradeEffects.BoostWater
                 )
             },
@@ -69,23 +73,23 @@ namespace Upgrades
                 new Upgrade(
                     "Lower Thresholds",
                     "Lower the requirement for satiation and hydration by 10%.",
-                    15.00f,
+                    12.00f,
                     UpgradeEffects.LowerRequirement
                 )
             },
             {
                 new Upgrade(
                     "Add Cookie Pack",
-                    "Adds the cookie pack (7.5 SAT) to the vending machine.",
-                    10.0f,
+                    "Adds the cookie pack ($1.75, 7.5 SAT) to the vending machine.",
+                    8.0f,
                     UpgradeEffects.AddCookiePack
                 )
             },
             {
                 new Upgrade(
                     "Add Crocorade",
-                    "Adds Crocorade (10.0 HYD) to the vending machine.",
-                    12.50f,
+                    "Adds Crocorade ($2.00, 10.0 HYD) to the vending machine.",
+                    10.00f,
                     UpgradeEffects.AddCrocorade
                 )
             },
@@ -93,8 +97,16 @@ namespace Upgrades
                 new Upgrade(
                     "Better Work Ethic",
                     "+$10 to payout, with a 25% chance to get another $10 as a bonus.",
-                    10.00f,
+                    9.00f,
                     UpgradeEffects.WorkEthic
+                )
+            },
+            {
+                new Upgrade(
+                    "More stock!",
+                    "Stocked items appear 2-5 times instead of 1-3.",
+                    10.00f,
+                    UpgradeEffects.IncreaseStock
                 )
             }
         };

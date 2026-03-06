@@ -15,6 +15,9 @@ public class Run {
     public float satiation;
     public float hydration;
 
+    public int stockMin;
+    public int stockMax;
+
     // fresh and stale variables
     public float freshMult;
     public float staleMult;
@@ -39,8 +42,8 @@ public class Run {
     private static readonly Dictionary<string, vl.VendingMachineItem> DefaultProducts = new() {
         { "ChipBag", new vl.VendingMachineItem("Bag of Chips", "Good ol' chips!", 1.50f, 5.0f, 0.0f) },
         { "WaterBottle", new vl.VendingMachineItem("Bottle of Water", "Fresh and crisp!", 1.25f, 0.0f, 5.0f) },
-        { "CookiePack", new vl.VendingMachineItem("Cookie Pack", "Sweet and tasty cookies!", 2.00f, 7.5f, 0.0f) },
-        { "Crocorade", new vl.VendingMachineItem("Crocarade", "Electrolytes! (It's called this for legal reasons.)", 2.50f, 0.0f, 10.0f) }
+        { "CookiePack", new vl.VendingMachineItem("Cookie Pack", "Sweet and tasty cookies!", 1.75f, 7.5f, 0.0f) },
+        { "Crocorade", new vl.VendingMachineItem("Crocarade", "Electrolytes! (It's called this for legal reasons.)", 2.00f, 0.0f, 10.0f) }
     };
 
     public Dictionary<string, vl.VendingMachineItem> products = new(DefaultProducts);
@@ -58,6 +61,9 @@ public class Run {
         money = 10.0f;
         satiation = 0.0f;
         hydration = 0.0f;
+
+        stockMin = 1;
+        stockMax = 3;
 
         // fresh and stale variables
         freshMult = 1.25f;

@@ -157,13 +157,14 @@ public class UIManager : MonoBehaviour
         MoveShopIn();
         yield return new WaitForSeconds(1.0f);
         ShowPayout();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
         continueContainer.SetActive(true);
     }
     private IEnumerator StartLevelCR() {
         PushShopOut();
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
         BringItemsIn();
+        payoutTxt.text = "";
         Instance.inShopScreen = false;
     }
 }

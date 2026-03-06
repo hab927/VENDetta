@@ -39,6 +39,7 @@ namespace VendettaLib {
         public static List<LevelProps> levels = new() {
             new(10, 10),
             new(20, 20),
+            new(25, 25),
             new(35, 35),
             new(50, 50)
         };
