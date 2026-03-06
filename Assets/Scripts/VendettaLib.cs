@@ -2,6 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace VendettaLib {
+    public enum Freshness {
+        Expired,
+        Stale,
+        Fresh,
+    }
+
     public class VendingMachineItem {
         public string name;
         public string blurb;

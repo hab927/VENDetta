@@ -5,8 +5,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using VendettaLib;
+using vl = VendettaLib;
 using static GameManager;
+using VendettaLib;
 
 public class UIManager : MonoBehaviour
 {
@@ -39,6 +40,8 @@ public class UIManager : MonoBehaviour
     public Button upgradeButton2;
     public Button upgradeButton3;
 
+    public Canvas loseScreen;
+
     // continue button
     public GameObject continueContainer;
 
@@ -57,7 +60,7 @@ public class UIManager : MonoBehaviour
         payoutShown.AddListener(
             () => {
                 if (Instance.run.bonuses) {
-                    if (Helpers.Roll(0.25f)) Instance.run.AddMoney(10.0f);
+                    if (vl.Helpers.Roll(0.25f)) Instance.run.AddMoney(10.0f);
                 }
                 Instance.run.AddMoney(Instance.run.income);
             }
@@ -143,18 +146,45 @@ public class UIManager : MonoBehaviour
         shop.GetComponent<Animator>().SetTrigger("Continue");
     }
 
-    public void AnimateFlavorText(Transform origin) { // animate a flavor text at the given transform
+    public void AnimateFlavorText(Transform origin, Freshness f) { // animate a flavor text at the given transform
         GameObject dropText = (GameObject)Resources.Load("Drop Text");
-        GameObject empty = new GameObject();
+        GameObject empty = new();
         GameObject flavor = Instantiate(dropText);
         empty.transform.position = origin.transform.position;
-        dropText.transform.parent = empty.transform;
-        StartCoroutine(FlavorCR(flavor));
+        flavor.transform.SetParent(empty.transform, false);
+
+        TMP_Text title = flavor.transform.Find("Title").gameObject.GetComponent<TMP_Text>();
+        TMP_Text value = flavor.transform.Find("Value").gameObject.GetComponent<TMP_Text>();
+
+        // set properties based on freshness
+        switch (f) {
+            case Freshness.Expired:
+                title.faceColor = Color.red;
+                value.faceColor = Color.red;
+                title.fontSize = 20;
+                title.text = "EXPIRED!";
+                value.text = "x" + CurrentRun.expiredMult.ToString("0.00");
+                break;
+            case Freshness.Stale:
+                title.fontSize = 26;
+                title.text = "STALE!";
+                value.text = "x1.00";
+                break;
+            case Freshness.Fresh:
+                title.fontSize = 26;
+                title.faceColor = Color.green;
+                value.faceColor = Color.green;
+                title.text = "FRESH!";
+                value.text = "x" + CurrentRun.freshMult.ToString("0.00");
+                break;
+        }
+
+        StartCoroutine(FlavorCR(empty));
     }
-    public IEnumerator FlavorCR(GameObject f) {
-        f.GetComponent<Animator>().Play("Fly Up and Fade");
-        yield return new WaitForSeconds(0.5f);
-        Destroy(f);
+    public IEnumerator FlavorCR(GameObject p) {
+        p.GetComponentInChildren<Animator>().Play("Fly Up and Fade");
+        yield return new WaitForSeconds(0.75f);
+        Destroy(p);
     }
 
     public void EndLevelAnimation() {

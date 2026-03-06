@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VendettaLib;
 
 public class KeypadButtons : MonoBehaviour
 {
@@ -62,6 +63,7 @@ public class KeypadButtons : MonoBehaviour
     }
 
     private IEnumerator AnimateFall(GameObject selection) {
+        Run run = GameManager.Instance.run;
         Animator anim = selection.GetComponent<Animator>();
         anim.Play("Fall");
 
@@ -69,7 +71,23 @@ public class KeypadButtons : MonoBehaviour
             yield return null;
         }
 
-        UIManager.instance.AnimateFlavorText(selection.transform);
+        float roll = Random.Range(0.0f, 1.0f);
+        Freshness f;
+        float freshnessMult = 1.0f;
+
+        if (roll <= run.freshChance) {
+            f = Freshness.Fresh;
+            freshnessMult = run.freshMult;
+        }
+        else if (roll <= run.freshChance + run.expiredChance) {
+            f = Freshness.Expired;
+            freshnessMult = run.expiredMult;
+        }
+        else {
+            f = Freshness.Stale;
+        }
+
+            UIManager.instance.AnimateFlavorText(selection.transform, f);
 
         if (impact != null) {
             impact.GetComponent<Animator>().Play("Fade Out");
@@ -78,8 +96,9 @@ public class KeypadButtons : MonoBehaviour
         Destroy(selection);
 
         // update the food fields
-        Run run = GameManager.Instance.run;
-        run.AddHydration(run.products[selection.name].hyd);
-        run.AddSatiation(run.products[selection.name].sat);
+        run.AddHydration(run.products[selection.name].hyd * freshnessMult);
+        run.AddSatiation(run.products[selection.name].sat * freshnessMult);
+
+        GameManager.Instance.HasLost();
     }
 }

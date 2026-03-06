@@ -20,10 +20,10 @@ public class Run {
 
     // fresh and stale variables
     public float freshMult;
-    public float staleMult;
+    public float expiredMult;
 
     public float freshChance;
-    public float staleChance;
+    public float expiredChance;
 
     // level goals
     public float satiationGoal;
@@ -67,10 +67,10 @@ public class Run {
 
         // fresh and stale variables
         freshMult = 1.25f;
-        staleMult = 0.75f;
+        expiredMult = 0.75f;
 
-        freshChance = 0.1f; // 10% chance for stale and fresh
-        staleChance = 0.1f;
+        freshChance = 0.2f; // 20% chance for stale and fresh
+        expiredChance = 0.2f;
 
         // level goals
         satiationGoal = 10.0f;

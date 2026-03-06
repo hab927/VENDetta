@@ -49,6 +49,12 @@ namespace Upgrades
             CurrentRun.stockMin = 2;
             CurrentRun.stockMax = 2;
         }
+        public static void FresherStock() {
+            CurrentRun.freshChance = 0.4f;
+        }
+        public static void ForeverFresh() {
+            CurrentRun.expiredChance = 0.1f;
+        }
     }
 
     public static class UpgradePool {
@@ -103,10 +109,26 @@ namespace Upgrades
             },
             {
                 new Upgrade(
-                    "More stock!",
+                    "More Stock",
                     "Stocked items appear 2-5 times instead of 1-3.",
                     10.00f,
                     UpgradeEffects.IncreaseStock
+                )
+            },
+            {
+                new Upgrade(
+                    "Fresher Stock",
+                    "Double chance of fresh items.",
+                    10.00f,
+                    UpgradeEffects.FresherStock
+                )
+            },
+            {
+                new Upgrade(
+                    "Expiration Examination",
+                    "Half the chance of expired items.",
+                    12.50f,
+                    UpgradeEffects.ForeverFresh
                 )
             }
         };

@@ -42,16 +42,41 @@ public class ShopManager : MonoBehaviour
 
         UIManager.instance.ActivateShopButtons();
 
-        upgrade1Name.text = choices[0].name;
-        upgrade2Name.text = choices[1].name;
-        upgrade3Name.text = choices[2].name;
+        if (choices.Count >= 1) {
+            upgrade1Name.text = choices[0].name;
+            upgrade1Description.text = choices[0].description;
+            upgrade1Price.text = "$" + choices[0].price.ToString("0.00");
+            UIManager.instance.upgradeButton1.interactable = true;
+        }
+        if (choices.Count >= 2) {
+            upgrade2Name.text = choices[1].name;
+            upgrade2Description.text = choices[1].description;
+            upgrade2Price.text = "$" + choices[1].price.ToString("0.00");
+            UIManager.instance.upgradeButton2.interactable = true;
+        }
+        if (choices.Count >= 3) {
+            upgrade3Name.text = choices[2].name;
+            upgrade3Description.text = choices[2].description;
+            upgrade3Price.text = "$" + choices[2].price.ToString("0.00");
+            UIManager.instance.upgradeButton3.interactable = true;
+        }
+    }
 
-        upgrade1Description.text = choices[0].description;
-        upgrade2Description.text = choices[1].description;
-        upgrade3Description.text = choices[2].description;
+    public void ResetShop() {
+        upgrade1Name.text = "[EMPTY]";
+        upgrade2Name.text = "[EMPTY]";
+        upgrade3Name.text = "[EMPTY]";
 
-        upgrade1Price.text = "$" + choices[0].price.ToString("0.00");
-        upgrade2Price.text = "$" + choices[1].price.ToString("0.00");
-        upgrade3Price.text = "$" + choices[2].price.ToString("0.00");
+        upgrade1Price.text = "";
+        upgrade2Price.text = "";
+        upgrade3Price.text = "";
+
+        upgrade1Description.text = "";
+        upgrade2Description.text = "";
+        upgrade3Description.text = "";
+
+        UIManager.instance.upgradeButton1.interactable = false;
+        UIManager.instance.upgradeButton2.interactable = false;
+        UIManager.instance.upgradeButton3.interactable = false;
     }
 }
