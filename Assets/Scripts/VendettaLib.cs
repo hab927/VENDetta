@@ -55,13 +55,22 @@ namespace VendettaLib {
     public static class Helpers {
         // returns true if the rolled number is less than the percent chance
         public static bool Roll(float chance) {
-            float roll = Random.Range(0.0f, 1.0f);
-            if (roll < chance) {
+            float roll = Random.value;
+            if (roll <= chance) {
                 return true;
             }
             else {
                 return false;
             }
+        }
+
+        // for win screen
+        public static string TimeAsString(float seconds) {
+            int wholeSeconds = (int)seconds;
+            string M = (wholeSeconds / 60).ToString();
+            string S = (wholeSeconds % 60).ToString();
+            
+            return M + "m " + S + "s";
         }
     }
 }

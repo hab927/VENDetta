@@ -1,8 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class SoundManager : MonoBehaviour
 {
-    public AudioClip computerGlitch;
+    public static SoundManager instance {  get; private set; }
+
+    public AudioClip buttonPress;           // joedeshon
+    public AudioClip computerGlitch;        // bassimat
     public AudioClip coinInsert;            // krokulator
     public AudioClip coinsFalling;          // moogleoftheages
     public AudioClip upgradePurchased;      // vilkas-sound
@@ -19,15 +23,41 @@ public class SoundManager : MonoBehaviour
 
     public AudioSource src;
 
+    private void Awake() {
+        if (instance != null && instance != this) {
+            Destroy(this.gameObject);
+        }
+        else {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
+    private void Start() {
+        src.volume = 1.0f;   
+    }
+
+    public void ChangeVolume(float value) {
+        src.volume = value;
+        PlayerPrefs.SetFloat("VolumeKey", value);
+    }
+
+    public void PlayButtonPress() {
+        src.PlayOneShot(buttonPress);
+    }
     public void PlayCoinsFalling() {
         src.PlayOneShot(coinsFalling);
+    }
+
+    public void PlayCoinInsert() {
+        src.PlayOneShot(coinInsert);
     }
 
     public void PlayUpgradePurchased() {
         src.PlayOneShot(upgradePurchased);
     }
 
-    public void PLayVendingConfirm() {
+    public void PlayVendingConfirm() {
         src.PlayOneShot(vendingConfirm);
     }
 
@@ -39,6 +69,10 @@ public class SoundManager : MonoBehaviour
         src.PlayOneShot(computerStartup);
     }
 
+    public void PlayComputerGlitch() {
+        src.PlayOneShot(computerGlitch);
+    }
+
     public void PlayWinSound() {
         src.PlayOneShot(winSound);
     }
@@ -48,18 +82,18 @@ public class SoundManager : MonoBehaviour
     }
 
     public void PlayExpiredSting() {
-        src.PlayOneShot(expiredSting);
+        src.PlayOneShot(expiredSting, 0.6f);
     }
 
     public void PlayFreshSting() {
-        src.PlayOneShot(freshSting);
+        src.PlayOneShot(freshSting, 0.6f);
     }
 
     public void PlayCrunch() {
         src.PlayOneShot(crunch);
     }
 
-    public void PlayGlug() {
+    public void PlaySlurp() {
         src.PlayOneShot(glug);
     }
 }

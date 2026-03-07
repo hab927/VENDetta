@@ -1,4 +1,3 @@
-using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,6 +6,7 @@ using Upgrades;
 public class UIElements : MonoBehaviour
 {
     public void ContinueButton() {
+        SoundManager.instance.PlayComputerGlitch();
         GameManager.Instance.run.NextLevel();
         GameManager.Instance.levelStarted.Invoke();
     }
@@ -19,6 +19,7 @@ public class UIElements : MonoBehaviour
             // check if we can afford it
             if (run.money > upgrade.price) {
                 run.SubtractMoney(upgrade.price);
+                SoundManager.instance.PlayUpgradePurchased();
                 upgrade.upgradeEffect();
                 GameObject clicked = EventSystem.current.currentSelectedGameObject;
 
@@ -31,5 +32,15 @@ public class UIElements : MonoBehaviour
                 run.AddUpgrade(upgrade);
             }
         }
+    }
+
+    public void OpenConfirmPopup() {
+        UIManager.instance.exitContainer.SetActive(true);
+        SoundManager.instance.PlayButtonPress();
+    }
+
+    public void CancelQuit() {
+        UIManager.instance.exitContainer.SetActive(false);
+        SoundManager.instance.PlayButtonPress();
     }
 }

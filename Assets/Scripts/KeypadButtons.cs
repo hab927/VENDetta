@@ -69,6 +69,8 @@ public class KeypadButtons : MonoBehaviour
 
         if (run.money >= run.products[selection.name].price) {
             run.money -= run.products[selection.name].price * run.priceMult;
+            SoundManager.instance.PlayVendingConfirm();
+            SoundManager.instance.PlayCoinInsert();
             UIManager.instance.UpdateMoneyDisplay();
 
             Renderer r = selection.GetComponent<Renderer>();
@@ -112,6 +114,16 @@ public class KeypadButtons : MonoBehaviour
         if (impact != null) {
             impact.GetComponent<Animator>().Play("Fade Out");
         }
+        if (run.products[selection.name].hyd > 0) {
+            GameManager.Instance.drankDrinks++;
+            SoundManager.instance.PlaySlurp();
+        }
+        if (run.products[selection.name].sat > 0) {
+            GameManager.Instance.eatenSnacks++;
+            SoundManager.instance.PlayCrunch();
+        }
+        if (f == Freshness.Fresh) SoundManager.instance.PlayFreshSting();
+        if (f == Freshness.Expired) SoundManager.instance.PlayExpiredSting();
 
         Destroy(selection);
 
@@ -123,7 +135,7 @@ public class KeypadButtons : MonoBehaviour
     }
 
     private IEnumerator WaitForLoss() {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.5f);
         if (!GameManager.Instance.inShopScreen) {
             GameManager.Instance.CheckForLoss();
         }

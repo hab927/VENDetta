@@ -54,7 +54,7 @@ public class Run {
         { "CookiePack", new vl.VendingMachineItem("Cookie Pack", "Sweet and tasty cookies!", 1.75f, 10.0f, 0.0f) },
         { "Crocorade", new vl.VendingMachineItem("Crocarade", "Electrolytes! (It's called this for legal reasons.)", 1.75f, 0.0f, 10.0f) },
         { "SodaBottle", new vl.VendingMachineItem("Joke-a Cola", "Fizzy, like TV static!", 2.50f, 0.0f, 15.0f) },
-        { "GranolaBar", new vl.VendingMachineItem("Bluf Bar", "Packed full of protein & nutrients!", 2.50f, 0.0f, 15.0f) }
+        { "GranolaBar", new vl.VendingMachineItem("Bluf Bar", "Packed full of protein & nutrients!", 2.50f, 15.0f, 0.0f) }
     };
 
     public Dictionary<string, vl.VendingMachineItem> products = new(DefaultProducts);

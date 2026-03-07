@@ -44,14 +44,14 @@ public class UIManager : MonoBehaviour
     public Button upgradeButton3;
 
     public GameObject loseScreen;
+    public GameObject winScreen;
+    public TMP_Text winStats;
 
     // continue button
     public GameObject continueContainer;
 
-    // audio clips
-
-    public AudioClip computerGlitch1;
-    public AudioClip computerGlitch2;
+    // quit to menu panel
+    public GameObject exitContainer;
 
     private void Awake() {
         if (instance != null && instance != this) {
@@ -126,7 +126,9 @@ public class UIManager : MonoBehaviour
         string text =   "ITEM " + keypadInput + ":\n" +
                         name + "\n" +
                         "$" + price + "\n" +
-                        desc;
+                        "<size=25>" + desc + "</size>\n" +
+                        "HYD: " + CurrentRun.products[ID].hyd + "\n" +
+                        "SAT: " + CurrentRun.products[ID].sat + "\n";
 
         displayImg.SetActive(true);
         Image img = displayImg.GetComponent<Image>();
@@ -136,6 +138,7 @@ public class UIManager : MonoBehaviour
     }
 
     public void ShowPayout() {
+        SoundManager.instance.PlayCoinsFalling();
         payoutTxt.text = "$" + CurrentRun.income.ToString("0.00");
         payoutShown.Invoke();
     }
@@ -151,9 +154,21 @@ public class UIManager : MonoBehaviour
         loseScreen.SetActive(true);
         loseScreen.GetComponent<Animator>().Play("Fade In");
     }
+    public void ShowWinScreen() {
+        winScreen.SetActive(true);
+        UpdateWinStatsText();
+        winScreen.GetComponent<Animator>().Play("Fade In");
+    }
+    public void UpdateWinStatsText() {
+        string text =   "Time spent: " + vl.Helpers.TimeAsString(GameManager.Instance.timeElapsed) + "\n" +
+                        "Snacks eaten: " + GameManager.Instance.eatenSnacks.ToString() + "\n" +
+                        "Drinks drank: " + GameManager.Instance.drankDrinks.ToString();
+        winStats.text = text;
+    }
 
     // animations
     public void MoveItemsAway() {
+        SoundManager.instance.PlayWhoosh();
         foreach (GameObject obj in ItemsOnRight) {
             obj.GetComponent<Animator>().Play("Fly Out to Right");
         }
@@ -162,6 +177,7 @@ public class UIManager : MonoBehaviour
         }
     }
     public void BringItemsIn() {
+        SoundManager.instance.PlayWhoosh();
         foreach (GameObject obj in ItemsOnRight) {
             obj.GetComponent<Animator>().SetTrigger("ShopEnd");
         }
@@ -170,9 +186,13 @@ public class UIManager : MonoBehaviour
         }
     }
     public void MoveShopIn() {
-        shop.GetComponent<Animator>().Play("shop fly in");
+        SoundManager.instance.PlayComputerStartup();
+        if (CurrentRun.level <= 4) {            // this will not move the shop in when you win
+            shop.GetComponent<Animator>().Play("shop fly in");
+        }
     }
     public void PushShopOut() {
+        SoundManager.instance.PlayWhoosh();
         shop.GetComponent<Animator>().SetTrigger("Continue");
     }
 
@@ -191,20 +211,17 @@ public class UIManager : MonoBehaviour
             case Freshness.Expired:
                 title.faceColor = Color.red;
                 value.faceColor = Color.red;
-                title.fontSize = 20;
-                title.text = "EXPIRED!";
+                title.text = "Expired!";
                 value.text = "x" + CurrentRun.expiredMult.ToString("0.00");
                 break;
             case Freshness.Stale:
-                title.fontSize = 26;
-                title.text = "STALE!";
+                title.text = "Okay!";
                 value.text = "x1.00";
                 break;
             case Freshness.Fresh:
-                title.fontSize = 26;
                 title.faceColor = Color.green;
                 value.faceColor = Color.green;
-                title.text = "FRESH!";
+                title.text = "Fresh!!";
                 value.text = "x" + CurrentRun.freshMult.ToString("0.00");
                 break;
         }
@@ -234,6 +251,7 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
         ShowPayout();
         yield return new WaitForSeconds(1.0f);
+        SoundManager.instance.PlayComputerGlitch();
         continueContainer.SetActive(true);
     }
     private IEnumerator StartLevelCR() {

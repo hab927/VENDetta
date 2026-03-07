@@ -24,7 +24,10 @@ public class GameManager : MonoBehaviour
     public UnityEvent gameLost;
     public UnityEvent gameWon;
 
+    // stats purely just for fun
     public float timeElapsed;
+    public int eatenSnacks;
+    public int drankDrinks;
 
     // flags
     public bool inShopScreen = false;
@@ -50,6 +53,7 @@ public class GameManager : MonoBehaviour
 
         levelEnded.AddListener(UIManager.instance.EndLevelAnimation);
         levelEnded.AddListener(ShopManager.Instance.SetUpgradesInShop);
+        levelEnded.AddListener(CheckForWin);
 
         // all functions that will be called at start of level
         levelStarted.AddListener(ItemPlacer.Instance.ResetItems);
@@ -61,6 +65,7 @@ public class GameManager : MonoBehaviour
         levelStarted.AddListener(UIManager.instance.UpdateKeypadScreen);
 
         gameLost.AddListener(UIManager.instance.ShowLoseScreen);
+        gameWon.AddListener(UIManager.instance.ShowWinScreen);
 
         ItemPlacer.Instance.PlaceItems();
 
@@ -78,15 +83,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         timeElapsed += Time.deltaTime;
-
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            SceneManager.LoadScene("Game");  // easy reset key so i don't have to press play mode over and over again
-        }
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            inShopScreen = true;
-            levelEnded.Invoke();
-            return;
-        }
 
         if (run.satiation >= run.satiationGoal && run.hydration >= run.hydrationGoal && !inShopScreen) {
             inShopScreen = true;
@@ -108,13 +104,19 @@ public class GameManager : MonoBehaviour
                 return;
             }
         }
+        SoundManager.instance.PlayLoseSound();
         gameLost.Invoke();
         return;
     }
 
     public void CheckForWin() {
-        if (run.level > 5) {
+        if (run.level == 5) {
+            SoundManager.instance.PlayWinSound();
             gameWon.Invoke();
         }
+    }
+
+    public void NewRun() {
+        run = new Run();
     }
 }

@@ -79,10 +79,10 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Palette0: {r: 0.09433961, g: 0.048266776, b: 0, a: 1}
-    - _Palette1: {r: 0.16037738, g: 0.045822106, b: 0, a: 1}
-    - _Palette2: {r: 0.254717, g: 0, b: 0.055981692, a: 1}
-    - _Palette3: {r: 0.3584906, g: 0, b: 0.18636107, a: 1}
+    - _Palette0: {r: 0.12099648, g: 0, b: 0.16981131, a: 1}
+    - _Palette1: {r: 0.10977112, g: 0, b: 0.2830189, a: 1}
+    - _Palette2: {r: 0, g: 0.19973081, b: 0.35686275, a: 1}
+    - _Palette3: {r: 0, g: 0.3490566, b: 0.31633255, a: 1}
     - _Resolution: {r: 1536, g: 864, b: 0, a: 0}
     - _ScrollDir: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}

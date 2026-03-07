@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 public class MainMenuElements : MonoBehaviour
 {
     public void LoadSceneOnClick(string sceneName) {
+        if (sceneName == "Game") {
+            GameManager.Instance.NewRun();
+        }
+        SoundManager.instance.PlayButtonPress();
         StartCoroutine(LoadScene(sceneName));
     }
 
@@ -17,6 +21,7 @@ public class MainMenuElements : MonoBehaviour
     }
 
     public void QuitButton() {
+        SoundManager.instance.PlayButtonPress();
         Application.Quit();
     }
 }
