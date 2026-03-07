@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Xml.Schema;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using Upgrades;
 using VendettaLib;
 
 public class GameManager : MonoBehaviour
@@ -10,6 +12,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public Run run;
+    public UpgradePool availableUpgrades;
 
     public UnityEvent moneyChanged;
     public UnityEvent satiationChanged;
@@ -19,6 +22,9 @@ public class GameManager : MonoBehaviour
     public UnityEvent levelStarted;
 
     public UnityEvent gameLost;
+    public UnityEvent gameWon;
+
+    public float timeElapsed;
 
     // flags
     public bool inShopScreen = false;
@@ -28,16 +34,15 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         } else {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
     }
 
     void Start()
     {
-        run = new Run();
+        timeElapsed = 0.0f;
 
-        run.satiationGoal = VendingLevels.levels[0].sGoal;
-        run.hydrationGoal = VendingLevels.levels[0].hGoal;
+        run = new Run();
+        availableUpgrades = new UpgradePool();
 
         moneyChanged.AddListener(UIManager.instance.UpdateMoneyDisplay);
         satiationChanged.AddListener(UIManager.instance.UpdateSatiationDisplay);
@@ -46,36 +51,42 @@ public class GameManager : MonoBehaviour
         levelEnded.AddListener(UIManager.instance.EndLevelAnimation);
         levelEnded.AddListener(ShopManager.Instance.SetUpgradesInShop);
 
-        levelStarted.AddListener(UIManager.instance.StartLevelAnimation);
+        // all functions that will be called at start of level
         levelStarted.AddListener(ItemPlacer.Instance.ResetItems);
+        levelStarted.AddListener(UIManager.instance.UpdateDayDisplay);
+        levelStarted.AddListener(UIManager.instance.UpdateHydrationDisplay);
+        levelStarted.AddListener(UIManager.instance.UpdateSatiationDisplay);
+        levelStarted.AddListener(UIManager.instance.UpdateModifierDisplay);
+        levelStarted.AddListener(UIManager.instance.ClearItemDisplay);
+        levelStarted.AddListener(UIManager.instance.UpdateKeypadScreen);
 
-        UIManager.instance.UpdateKeypadScreen();
-        UIManager.instance.ClearItemDisplay();
+        gameLost.AddListener(UIManager.instance.ShowLoseScreen);
+
         ItemPlacer.Instance.PlaceItems();
+
+        run.satiationGoal = VendingLevels.levels[0].sGoal;
+        run.hydrationGoal = VendingLevels.levels[0].hGoal;
+        run.SetModifiers(VendingLevels.levels[0].modifiers);
+        run.ApplyModifiers();
+
+        levelStarted.Invoke();
+
+        levelStarted.AddListener(UIManager.instance.StartLevelAnimation);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // hacks to test the UI
-        //if (Input.GetKeyDown(KeyCode.H)) {
-        //    run.hydration++;
-        //    Debug.Log(run.hydration);
-        //    hydrationChanged.Invoke();
-        //}
-        //if (Input.GetKeyDown(KeyCode.S)) {
-        //    run.satiation++;
-        //    Debug.Log(run.satiation);
-        //    satiationChanged.Invoke();
-        //}
-        //if (Input.GetKeyDown(KeyCode.E)) {
-        //    Debug.Log("ending level");
-        //    levelEnded.Invoke();
-        //}
-        //if (Input.GetKeyDown(KeyCode.R)) {
-        //    Debug.Log("starting level");
-        //    levelStarted.Invoke();
-        //}
+        timeElapsed += Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            SceneManager.LoadScene("Game");  // easy reset key so i don't have to press play mode over and over again
+        }
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            inShopScreen = true;
+            levelEnded.Invoke();
+            return;
+        }
 
         if (run.satiation >= run.satiationGoal && run.hydration >= run.hydrationGoal && !inShopScreen) {
             inShopScreen = true;
@@ -83,11 +94,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void HasLost() {
-        if (run.satiationGoal < run.satiation) {
-            return;
-        }
-        else if (run.hydrationGoal < run.hydration) {
+    public void CheckForLoss() {
+        if (run.satiationGoal < run.satiation && run.hydrationGoal < run.hydration) {  // win by definition
             return;
         }
         foreach (string snack in run.snacks) {
@@ -102,5 +110,11 @@ public class GameManager : MonoBehaviour
         }
         gameLost.Invoke();
         return;
+    }
+
+    public void CheckForWin() {
+        if (run.level > 5) {
+            gameWon.Invoke();
+        }
     }
 }

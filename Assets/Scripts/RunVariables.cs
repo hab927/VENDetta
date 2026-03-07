@@ -1,12 +1,15 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager.Requests;
-using UnityEngine;
-using vl = VendettaLib;
+using System.Linq;
+
 using Upgrades;
+using Modifiers;
+using vl = VendettaLib;
+using UnityEngine;
 
 public class Run {
+    // store base stats to keep track of permanent upgrades
+    private Run baseRun;
+
     // basic run variables
     public float level;
     public float income;
@@ -22,8 +25,10 @@ public class Run {
     public float freshMult;
     public float expiredMult;
 
+    // probabilities
     public float freshChance;
     public float expiredChance;
+    public float goodModChance;
 
     // level goals
     public float satiationGoal;
@@ -32,18 +37,24 @@ public class Run {
     // multipliers to keep track of during the game
     public float satGoalMult;
     public float hydGoalMult;
+    public float priceMult;
 
     // list of upgrades
     public List<Upgrade> upgrades;
+
+    // list of modifiers
+    public List<LevelModifier> modifiers;
 
     // upgrade flags
     public bool bonuses;
 
     private static readonly Dictionary<string, vl.VendingMachineItem> DefaultProducts = new() {
         { "ChipBag", new vl.VendingMachineItem("Bag of Chips", "Good ol' chips!", 1.50f, 5.0f, 0.0f) },
-        { "WaterBottle", new vl.VendingMachineItem("Bottle of Water", "Fresh and crisp!", 1.25f, 0.0f, 5.0f) },
-        { "CookiePack", new vl.VendingMachineItem("Cookie Pack", "Sweet and tasty cookies!", 1.75f, 7.5f, 0.0f) },
-        { "Crocorade", new vl.VendingMachineItem("Crocarade", "Electrolytes! (It's called this for legal reasons.)", 2.00f, 0.0f, 10.0f) }
+        { "WaterBottle", new vl.VendingMachineItem("Bottle of Water", "Fresh and crisp!", 1.50f, 0.0f, 5.0f) },
+        { "CookiePack", new vl.VendingMachineItem("Cookie Pack", "Sweet and tasty cookies!", 1.75f, 10.0f, 0.0f) },
+        { "Crocorade", new vl.VendingMachineItem("Crocarade", "Electrolytes! (It's called this for legal reasons.)", 1.75f, 0.0f, 10.0f) },
+        { "SodaBottle", new vl.VendingMachineItem("Joke-a Cola", "Fizzy, like TV static!", 2.50f, 0.0f, 15.0f) },
+        { "GranolaBar", new vl.VendingMachineItem("Bluf Bar", "Packed full of protein & nutrients!", 2.50f, 0.0f, 15.0f) }
     };
 
     public Dictionary<string, vl.VendingMachineItem> products = new(DefaultProducts);
@@ -69,8 +80,10 @@ public class Run {
         freshMult = 1.25f;
         expiredMult = 0.75f;
 
+        // probabilities
         freshChance = 0.2f; // 20% chance for stale and fresh
         expiredChance = 0.2f;
+        goodModChance = 0.5f;
 
         // level goals
         satiationGoal = 10.0f;
@@ -79,53 +92,105 @@ public class Run {
         // multipliers
         satGoalMult = 1.0f;
         hydGoalMult = 1.0f;
+        priceMult = 1.0f;
 
         // upgrades list
         upgrades = new();
 
         // upgrades flags
         bonuses = false;
-}
+
+        // modifiers
+        modifiers = new();
+    }
+
+    public void SaveToBase() {
+        baseRun = (Run)this.MemberwiseClone();
+    }
+
 
     public void AddMoney(float m) {
         money += m;
         UIManager.instance.UpdateMoneyDisplay();
+        SaveToBase();
     }
     public void SubtractMoney(float m) {
         money -= m;
         UIManager.instance.UpdateMoneyDisplay();
+        SaveToBase();
     }
 
     public void AddSatiation(float s) {
         satiation += s;
         UIManager.instance.UpdateSatiationDisplay();
+        SaveToBase();
     }
     public void SubtractSatiation(float s) {
         satiation -= s;
         UIManager.instance.UpdateSatiationDisplay();
+        SaveToBase();
     }
 
     public void AddHydration(float h) {
         hydration += h;
         UIManager.instance.UpdateHydrationDisplay();
+        SaveToBase();
     }
     public void SubtractHydration(float h) {
         hydration -= h;
         UIManager.instance.UpdateHydrationDisplay();
+        SaveToBase();
     }
 
-    public void NextLevel() {
-        level++;
-        hydration = 0.0f;
-        satiation = 0.0f;
-        satiationGoal = satGoalMult * vl.VendingLevels.levels[(int)level].sGoal;
-        hydrationGoal = hydGoalMult * vl.VendingLevels.levels[(int)level].hGoal;
-        UIManager.instance.UpdateHydrationDisplay();
-        UIManager.instance.UpdateSatiationDisplay();
-        ItemPlacer.Instance.ResetItems();
+    public void SetModifiers(int amt) {
+        List<LevelModifier> buffs = ModifierPool.data.Where(m => m.type == vl.ModifierType.Buff).ToList();
+        List<LevelModifier> debuffs = ModifierPool.data.Where(m => m.type == vl.ModifierType.Debuff).ToList();
+
+        modifiers = new();
+
+        for (int i = 0; i < amt; i++) {
+            List<LevelModifier> choices = (vl.Helpers.Roll(goodModChance) ? buffs : debuffs);
+            modifiers.Add(choices[Random.Range(0, choices.Count)]);
+        }
+    }
+
+    public void ApplyModifiers() {
+        foreach (LevelModifier modifier in modifiers) {
+            modifier.effect();
+        }
     }
 
     public void AddUpgrade(Upgrade u) {
         upgrades.Add(u);
+        SaveToBase();
+    }
+
+    public void NextLevel() {
+        level++;
+
+        ResetToBaseRun();
+
+        hydration = 0.0f;
+        satiation = 0.0f;
+        satiationGoal = satGoalMult * vl.VendingLevels.levels[(int)level].sGoal;
+        hydrationGoal = hydGoalMult * vl.VendingLevels.levels[(int)level].hGoal;
+
+        SetModifiers(vl.VendingLevels.levels[(int)level].modifiers);
+
+        ApplyModifiers();
+
+        UIManager.instance.UpdateHydrationDisplay();
+        UIManager.instance.UpdateSatiationDisplay();
+        UIManager.instance.UpdateModifierDisplay();
+        ItemPlacer.Instance.ResetItems();
+    }
+
+    public void ResetToBaseRun() {
+        if (baseRun == null) return;
+
+        this.income = baseRun.income;
+        this.hydrationGoal = baseRun.hydrationGoal;
+        this.priceMult = baseRun.priceMult;
+        this.satiationGoal = baseRun.satiationGoal;
     }
 }

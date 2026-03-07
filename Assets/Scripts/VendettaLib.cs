@@ -8,6 +8,11 @@ namespace VendettaLib {
         Fresh,
     }
 
+    public enum ModifierType {
+        Buff,
+        Debuff
+    }
+
     public class VendingMachineItem {
         public string name;
         public string blurb;
@@ -15,39 +20,35 @@ namespace VendettaLib {
         public float sat;
         public float hyd;
 
-        // modifiers
-        public bool fresh; // base: 25% more score
-        public bool stale; // base: 25% less score
-
         public VendingMachineItem(string name, string blurb, float price, float sat, float hyd) {
             this.name = name;
             this.blurb = blurb;
             this.price = price;
             this.sat = sat;
             this.hyd = hyd;
-
-            fresh = false;
-            stale = false;
         }
     }
 
     public struct LevelProps {
         public float sGoal;
         public float hGoal;
+        public int modifiers;
 
-        public LevelProps(int s, int h) {
+        public LevelProps(int s, int h, int m) {
             sGoal = s;
             hGoal = h;
+            modifiers = m;
         }
     }
 
     public static class VendingLevels {
         public static List<LevelProps> levels = new() {
-            new(10, 10),
-            new(20, 20),
-            new(25, 25),
-            new(35, 35),
-            new(50, 50)
+            new(10, 10, 1),
+            new(20, 20, 1),
+            new(35, 25, 2),
+            new(50, 50, 2),
+            new(75, 75, 2),
+            new(100, 100, 3)
         };
     }
 

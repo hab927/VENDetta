@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using vl = VendettaLib;
-using static GameManager;
 using VendettaLib;
+using Modifiers;
+using static GameManager;
 
 public class UIManager : MonoBehaviour
 {
@@ -35,15 +35,23 @@ public class UIManager : MonoBehaviour
     public List<GameObject> ItemsOnLeft;
     public GameObject shop;
 
+    public TMP_Text modifierDisplay;
+    public TMP_Text dayDisplay;
+
     // shop buttons
     public Button upgradeButton1;
     public Button upgradeButton2;
     public Button upgradeButton3;
 
-    public Canvas loseScreen;
+    public GameObject loseScreen;
 
     // continue button
     public GameObject continueContainer;
+
+    // audio clips
+
+    public AudioClip computerGlitch1;
+    public AudioClip computerGlitch2;
 
     private void Awake() {
         if (instance != null && instance != this) {
@@ -51,7 +59,6 @@ public class UIManager : MonoBehaviour
         }
         else {
             instance = this;
-            DontDestroyOnLoad(this.gameObject);
         }
     }
 
@@ -71,12 +78,12 @@ public class UIManager : MonoBehaviour
         moneyTxt.text = "$" + CurrentRun.money.ToString("0.00");
     }
     public void UpdateSatiationDisplay() {
-        satiationTxt.text = "Satiation: " + CurrentRun.satiation.ToString("F1") + "/" + CurrentRun.satiationGoal.ToString("F1");
+        satiationTxt.text = "Satiation: " + CurrentRun.satiation.ToString("0.0") + "/" + CurrentRun.satiationGoal.ToString("0.0");
         satiationSlider.value = CurrentRun.satiation;
         satiationSlider.maxValue = CurrentRun.satiationGoal;
     }
     public void UpdateHydrationDisplay() {
-        hydrationTxt.text = "Hydration: " + CurrentRun.hydration.ToString("F1") + "/" + CurrentRun.hydrationGoal.ToString("F1");
+        hydrationTxt.text = "Hydration: " + CurrentRun.hydration.ToString("0.0") + "/" + CurrentRun.hydrationGoal.ToString("0.0");
         hydrationSlider.value = CurrentRun.hydration;
         hydrationSlider.maxValue = CurrentRun.hydrationGoal;
     }
@@ -86,6 +93,23 @@ public class UIManager : MonoBehaviour
             text += "_";
         }
         screenTxt.text = text;
+    }
+    public void UpdateModifierDisplay() {
+        string text = "";
+        foreach (LevelModifier modifier in CurrentRun.modifiers) {
+            if (modifier.type == ModifierType.Buff) {           // we got a buff
+                text += "<color=#00FF00>" + modifier.name + "</color>: " + "<color=#999999>" + modifier.description + "</color>\n";
+            }
+            else {                                              // we got a debuff
+                text += "<color=#FF0000>" + modifier.name + "</color>: " + "<color=#999999>" + modifier.description + "</color>\n";
+            }
+        }
+        modifierDisplay.text = text;
+    }
+    public void UpdateDayDisplay() {
+        string text = "DAY " + (CurrentRun.level + 1) + "/6";
+        if (CurrentRun.level > 5) text = "DAY 6/6";
+        dayDisplay.text = text;
     }
 
     public void ClearItemDisplay() {
@@ -98,7 +122,7 @@ public class UIManager : MonoBehaviour
         string ID = item.name; // should match the key in the run variables' products
         string name = CurrentRun.products[ID].name;
         string desc = CurrentRun.products[ID].blurb;
-        string price = CurrentRun.products[ID].price.ToString("0.00");
+        string price = (CurrentRun.products[ID].price * CurrentRun.priceMult).ToString("0.00");
         string text =   "ITEM " + keypadInput + ":\n" +
                         name + "\n" +
                         "$" + price + "\n" +
@@ -120,6 +144,12 @@ public class UIManager : MonoBehaviour
         upgradeButton1.interactable = true;
         upgradeButton2.interactable = true;
         upgradeButton3.interactable = true;
+    }
+
+    // win & lose screens
+    public void ShowLoseScreen() {
+        loseScreen.SetActive(true);
+        loseScreen.GetComponent<Animator>().Play("Fade In");
     }
 
     // animations
@@ -191,7 +221,9 @@ public class UIManager : MonoBehaviour
         StartCoroutine(EndLevelCR());
     }
     public void StartLevelAnimation() {
-        StartCoroutine(StartLevelCR());
+        if (CurrentRun.level <= 5) {
+            StartCoroutine(StartLevelCR());
+        }
     }
 
     private IEnumerator EndLevelCR() {

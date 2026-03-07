@@ -15,4 +15,8 @@ public class MainMenuElements : MonoBehaviour
             yield return null;
         }
     }
+
+    public void QuitButton() {
+        Application.Quit();
+    }
 }

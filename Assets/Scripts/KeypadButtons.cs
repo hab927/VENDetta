@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using VendettaLib;
@@ -11,11 +12,26 @@ public class KeypadButtons : MonoBehaviour
 
     private void Start() {
         txt = GetComponentInChildren<TMP_Text>();
+
+        AudioSource audSrc = this.AddComponent<AudioSource>();
+        audSrc.clip = (AudioClip)Resources.Load("button-press");
+    }
+
+    private void PlaySound() {
+        AudioSource audSrc = GetComponent<AudioSource>();
+        audSrc.pitch = Random.Range(1.4f, 1.6f);
+        audSrc.Play();
+    }
+    private void PlaySoundLower() {
+        AudioSource audSrc = GetComponent<AudioSource>();
+        audSrc.pitch = Random.Range(0.9f, 1.1f);
+        audSrc.Play();
     }
 
     public void KeypadPressed() {
+        PlaySound();
+
         UIManager.instance.keypadInput += txt.text;
-        Debug.Log(UIManager.instance.keypadInput);
         if (UIManager.instance.keypadInput.Length >= 3) {
             UIManager.instance.keypadInput = txt.text;
         }
@@ -37,18 +53,22 @@ public class KeypadButtons : MonoBehaviour
     }
 
     public void KeypadClear() {
+        PlaySoundLower();
+
         UIManager.instance.keypadInput = "";
         UIManager.instance.UpdateKeypadScreen();
     }
 
     public void KeypadConfirm() {
+        PlaySoundLower();
+
         GameObject slot = GameObject.Find(UIManager.instance.keypadInput);
         GameObject selection = slot.transform.GetChild(0).gameObject;
 
         Run run = GameManager.Instance.run;
 
         if (run.money >= run.products[selection.name].price) {
-            run.money -= run.products[selection.name].price;
+            run.money -= run.products[selection.name].price * run.priceMult;
             UIManager.instance.UpdateMoneyDisplay();
 
             Renderer r = selection.GetComponent<Renderer>();
@@ -87,7 +107,7 @@ public class KeypadButtons : MonoBehaviour
             f = Freshness.Stale;
         }
 
-            UIManager.instance.AnimateFlavorText(selection.transform, f);
+        UIManager.instance.AnimateFlavorText(selection.transform, f);
 
         if (impact != null) {
             impact.GetComponent<Animator>().Play("Fade Out");
@@ -99,6 +119,13 @@ public class KeypadButtons : MonoBehaviour
         run.AddHydration(run.products[selection.name].hyd * freshnessMult);
         run.AddSatiation(run.products[selection.name].sat * freshnessMult);
 
-        GameManager.Instance.HasLost();
+        StartCoroutine(WaitForLoss());
+    }
+
+    private IEnumerator WaitForLoss() {
+        yield return new WaitForSeconds(1.5f);
+        if (!GameManager.Instance.inShopScreen) {
+            GameManager.Instance.CheckForLoss();
+        }
     }
 }

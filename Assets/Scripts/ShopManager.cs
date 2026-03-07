@@ -37,7 +37,8 @@ public class ShopManager : MonoBehaviour
 
     public void SetUpgradesInShop() {
         Run run = GameManager.Instance.run;
-        List<Upgrade> notBoughtYet = UpgradePool.data.Where(u => !run.upgrades.Any(bought => bought.name == u.name)).ToList();
+        UpgradePool pool = GameManager.Instance.availableUpgrades;
+        List<Upgrade> notBoughtYet = pool.data.Where(u => !run.upgrades.Any(bought => bought.name == u.name)).ToList();
         choices = notBoughtYet.OrderBy(item => Guid.NewGuid()).Take(3).ToList();
 
         UIManager.instance.ActivateShopButtons();

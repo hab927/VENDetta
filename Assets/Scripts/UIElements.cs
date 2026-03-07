@@ -28,7 +28,7 @@ public class UIElements : MonoBehaviour
                     }
                 }
 
-                run.upgrades.Add(upgrade);
+                run.AddUpgrade(upgrade);
             }
         }
     }
