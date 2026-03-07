@@ -10933,6 +10933,8 @@ MonoBehaviour:
   upgradeButton3: {fileID: 1547533770}
   loseScreen: {fileID: 902962707}
   continueContainer: {fileID: 698412552}
+  computerGlitch1: {fileID: 0}
+  computerGlitch2: {fileID: 0}
 --- !u!4 &993097638
 Transform:
   m_ObjectHideFlags: 0
