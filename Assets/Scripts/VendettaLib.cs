@@ -27,6 +27,14 @@ namespace VendettaLib {
             this.sat = sat;
             this.hyd = hyd;
         }
+
+        public VendingMachineItem(VendingMachineItem other) {
+            this.name = other.name;
+            this.blurb = other.blurb;
+            this.price = other.price;
+            this.sat = other.sat;
+            this.hyd = other.hyd;
+        }
     }
 
     public struct LevelProps {

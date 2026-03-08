@@ -18,14 +18,26 @@ public class KeypadButtons : MonoBehaviour
     }
 
     private void PlaySound() {
-        AudioSource audSrc = GetComponent<AudioSource>();
-        audSrc.pitch = Random.Range(1.4f, 1.6f);
-        audSrc.Play();
+        StartCoroutine(PSCR());
     }
     private void PlaySoundLower() {
-        AudioSource audSrc = GetComponent<AudioSource>();
-        audSrc.pitch = Random.Range(0.9f, 1.1f);
-        audSrc.Play();
+        StartCoroutine(PSLCR());
+    }
+    private IEnumerator PSCR() {
+        SoundManager.instance.src.pitch = Random.Range(0.8f, 1.2f);
+        SoundManager.instance.PlayButtonPress();
+        while (SoundManager.instance.src.isPlaying) {
+            yield return null;
+        }
+        SoundManager.instance.src.pitch = 1.0f;
+    }
+    private IEnumerator PSLCR() {
+        SoundManager.instance.src.pitch = Random.Range(0.7f, 0.8f);
+        SoundManager.instance.PlayButtonPress();
+        while (SoundManager.instance.src.isPlaying) {
+            yield return null;
+        }
+        SoundManager.instance.src.pitch = 1.0f;
     }
 
     public void KeypadPressed() {

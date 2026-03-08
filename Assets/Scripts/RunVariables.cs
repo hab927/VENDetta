@@ -111,33 +111,39 @@ public class Run {
 
     public void AddMoney(float m) {
         money += m;
+        money = Mathf.Round(money * 10f) * 0.1f;
         UIManager.instance.UpdateMoneyDisplay();
         SaveToBase();
     }
     public void SubtractMoney(float m) {
         money -= m;
+        money = Mathf.Round(money * 10f) * 0.1f;
         UIManager.instance.UpdateMoneyDisplay();
         SaveToBase();
     }
 
     public void AddSatiation(float s) {
         satiation += s;
+        satiation = Mathf.Round(satiation * 10f) * 0.1f;
         UIManager.instance.UpdateSatiationDisplay();
         SaveToBase();
     }
     public void SubtractSatiation(float s) {
         satiation -= s;
+        satiation = Mathf.Round(satiation * 10f) * 0.1f;
         UIManager.instance.UpdateSatiationDisplay();
         SaveToBase();
     }
 
     public void AddHydration(float h) {
         hydration += h;
+        hydration = Mathf.Round(hydration * 10f) * 0.1f;
         UIManager.instance.UpdateHydrationDisplay();
         SaveToBase();
     }
     public void SubtractHydration(float h) {
         hydration -= h;
+        hydration = Mathf.Round(hydration * 10f) * 0.1f;
         UIManager.instance.UpdateHydrationDisplay();
         SaveToBase();
     }

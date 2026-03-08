@@ -6,6 +6,7 @@ using Upgrades;
 public class UIElements : MonoBehaviour
 {
     public void ContinueButton() {
+        UIManager.instance.continueContainer.SetActive(false);
         SoundManager.instance.PlayComputerGlitch();
         GameManager.Instance.run.NextLevel();
         GameManager.Instance.levelStarted.Invoke();

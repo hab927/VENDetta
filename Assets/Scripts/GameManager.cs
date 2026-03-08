@@ -118,5 +118,11 @@ public class GameManager : MonoBehaviour
 
     public void NewRun() {
         run = new Run();
+        availableUpgrades = new UpgradePool();
+
+        run.satiationGoal = VendingLevels.levels[0].sGoal;
+        run.hydrationGoal = VendingLevels.levels[0].hGoal;
+        run.SetModifiers(VendingLevels.levels[0].modifiers);
+        run.ApplyModifiers();
     }
 }
