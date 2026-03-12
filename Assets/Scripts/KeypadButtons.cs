@@ -148,6 +148,7 @@ public class KeypadButtons : MonoBehaviour
 
     private IEnumerator WaitForLoss() {
         yield return new WaitForSeconds(2.5f);
+
         if (!GameManager.Instance.inShopScreen) {
             GameManager.Instance.CheckForLoss();
         }

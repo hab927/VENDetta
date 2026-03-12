@@ -91,18 +91,21 @@ public class GameManager : MonoBehaviour
     }
 
     public void CheckForLoss() {
-        if (run.satiationGoal < run.satiation && run.hydrationGoal < run.hydration) {  // win by definition
+        if (run.satiationGoal <= run.satiation && run.hydrationGoal <= run.hydration) {  // win by definition
             return;
         }
         foreach (string snack in run.snacks) {
-            if (run.products[snack].price < run.money) { // check if we can afford any more snacks
+            if (run.products[snack].price * run.priceMult <= run.money) { // check if we can afford any more snacks
                 return;
             }
         }
         foreach (string drink in run.drinks) {
-            if (run.products[drink].price < run.money) { // check if we can afford any more drinks
+            if (run.products[drink].price * run.priceMult <= run.money) { // check if we can afford any more drinks
                 return;
             }
+        }
+        if (inShopScreen) { // you can't lose in the shop!
+            return;
         }
         SoundManager.instance.PlayLoseSound();
         gameLost.Invoke();
